@@ -201,8 +201,10 @@ typedef NS_ENUM(NSInteger, IIMySceneZPosition)
     [self.spriteForVerticalScrolling setXScale:xScale];
     [self.spriteForHorizontalScrolling setXScale:xScale];
     [self.spriteForHorizontalScrolling setYScale:yScale];
+
     CGFloat xScaleReciprocal = 1.0/xScale;
-    CGFloat yScaleReciprocal = 1/yScale;
+    CGFloat yScaleReciprocal = 1.0/yScale;
+
     for (SKNode *node in [self.spriteForVerticalScrolling children])
     {
         [node setXScale:xScaleReciprocal];

@@ -30,26 +30,26 @@ static NSString * kViewTransformChanged = @"view transform changed";
 
     // Create and configure the scene.
     IIMyScene *scene = [IIMyScene sceneWithSize:skView.bounds.size];
-    scene.scaleMode = SKSceneScaleModeFill;
+    scene.scaleMode = SKSceneScaleModeResizeFill;
 
     // Present the scene.
     [skView presentScene:scene];
     _scene = scene;
 
     CGSize contentSize = skView.frame.size;
-    contentSize.height *= 1.5;
-    contentSize.width *= 1.5;
+    const CGFloat multiplier = 1.5;
+    contentSize.height *= multiplier;
     [scene setContentSize:contentSize];
 
-    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:skView.frame];
-    [scrollView setContentSize:contentSize];
 
-    scrollView.delegate = self;
+    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    [scrollView setDelegate:self];
     [scrollView setMinimumZoomScale:1.0];
     [scrollView setMaximumZoomScale:3.0];
     [scrollView setIndicatorStyle:UIScrollViewIndicatorStyleWhite];
     UIView *clearContentView = [[UIView alloc] initWithFrame:(CGRect){.origin = CGPointZero, .size = contentSize}];
     [clearContentView setBackgroundColor:[UIColor clearColor]];
+    [scrollView setContentSize:contentSize];
     [scrollView addSubview:clearContentView];
 
     _clearContentView = clearContentView;
@@ -59,6 +59,12 @@ static NSString * kViewTransformChanged = @"view transform changed";
                           options:NSKeyValueObservingOptionNew
                           context:&kViewTransformChanged];
     [skView addSubview:scrollView];
+
+    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(scrollView, clearContentView);
+    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+    [skView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:0 views:viewsDictionary]];
+    [skView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[scrollView]|" options:0 metrics:0 views:viewsDictionary]];
 }
 
 -(void)adjustContent:(UIScrollView *)scrollView
